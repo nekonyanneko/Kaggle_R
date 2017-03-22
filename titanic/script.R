@@ -21,7 +21,7 @@ print(table(train$Sex, train$Title))
 print(table(test$Sex, test$Title))
 
 # Titles with very low cell counts to be combined to "rare" level
-mis_title <- c('Dr', 'Ms', 'Dona')
+mis_title  <- c('Dr', 'Ms', 'Dona')
 male_title <- c('Capt', 'Col', 'Don', 'Jonkheer', 'Major', 'Master', 'Rev', 'Sir')
 
 ###################
@@ -49,53 +49,55 @@ test$Title[test$Title %in% male_title] <- 'Mr'
 test$Title[test$Title %in% mis_title] <- 'Ms'
 print(table(test$Sex, test$Title))
 
-# Data strings trance to integer
-train$Embarked[train$Embarked == 'S'] <- 0
-train$Embarked[train$Embarked == 'Q'] <- 1
-train$Embarked[train$Embarked == 'C'] <- 2
-train$Embarked[train$Embarked == ''] <- -1
-train$Title[train$Title == 'Mr'] <- 0
-train$Title[train$Title == 'Ms'] <- 1
-train$Title[train$Title == 'Mrs'] <- 2
-train$Title[train$Title == 'Miss'] <- 3
-
-test$Embarked[test$Embarked == 'S'] <- 0
-test$Embarked[test$Embarked == 'Q'] <- 1
-test$Embarked[test$Embarked == 'C'] <- 2
-test$Title[test$Title == 'Mr'] <- 0
-test$Title[test$Title == 'Ms'] <- 1
-test$Title[test$Title == 'Mrs'] <- 2
-test$Title[test$Title == 'Miss'] <- 3
-
 # Delete Data (PassengerId,Name)
 train <- train[,c(2,3,7,8,13)]
 test  <- test[,c(2,3,7,8,13)]
 train[,1] <- as.factor(train[,1])
 test[,1]  <- as.factor(test[,1])
+train[,5] <- as.factor(train[,5])
+test[,5]  <- as.factor(test[,5])
+
+num <- sample(nrow(train), nrow(train)*0.7, replace = F)
+train1 <- train[num,]
+train2 <- train[-num,]
 
 # randomforest tuneRF
-tune <- tuneRF(train[,-1],train[,1],doBest=T,ntreeTry = 500,stepFactor = T)
+tune <- tuneRF(train1[,-1], train1[,1], doBest=T, ntreeTry = 500, stepFactor = T)
+print("[tune-train1] Confusion Matrix:")
+print(tune$confusion)
+
+## train1
 # predict
-pred.tune <- predict(tune, newdata=test, type='class')
-pred.tune <- as.numeric(pred.tune)-1
-prob.tune <- predict(tune, newdata=test, type='prob')
-roc_table <- cbind(prob.tune, pred.tune)
-pred_data <- cbind(gender[,1],pred.tune)
-colnames(pred_data) <- c("PassengerId", "Survived")
-write.table(pred_data, "./pred_data.txt", quote=F, row.names = F, col.names=T, append=F,sep = ",")
-write.table(roc_table[,-1], "./roc_data.txt", quote=F, row.names = F, col.names=F, append=F,sep = ",")
-
-# modelとtuneのConfution Matrixを比較
-print("[tune] Confusion Matrix:")
-print(table(pred.tune, test[,1]))
-
-# ROC
-rocdata <- read.delim("roc_data.txt",sep = ",",header = F)
-pred <- prediction(predictions = rocdata$V1, labels = rocdata$V2)
+pred.tune <- predict(tune, newdata=train1, type='class')
+prob.tune <- predict(tune, newdata=train1, type='prob')
+# ROC and AUC
+pred <- prediction(predictions = prob.tune[,2], labels = train1[,1])  #確率値、正解ラベル
 perf <- performance(pred, "tpr", "fpr")
 plot(perf)
 auc.tmp <- performance(pred,"auc")
 auc <- as.numeric(auc.tmp@y.values)
-print("**** AUC ****")
+print("[tune-train1]AUC")
 print(auc)
 
+## train2
+# predict
+pred.tune <- predict(tune, newdata=train2, type='class')
+prob.tune <- predict(tune, newdata=train2, type='prob')
+# modelとtuneのConfution Matrixを比較
+print("[tune-train2] Confusion Matrix:")
+print(table(pred.tune, train2[,1]))
+# ROC and AUC
+pred <- prediction(predictions = prob.tune[,2], labels = train2[,1])  #確率値、正解ラベル
+perf <- performance(pred, "tpr", "fpr")
+plot(perf)
+auc.tmp <- performance(pred,"auc")
+auc <- as.numeric(auc.tmp@y.values)
+print("[tune-train2]AUC")
+print(auc)
+
+# Kaggle Data create
+pred.tune <- predict(tune, newdata=test, type='class')
+pred_data <- cbind(gender[,1],pred.tune)
+pred_data[,2] <- pred_data[,2]-1
+colnames(pred_data) <- c("PassengerId", "Survived")
+write.table(pred_data, "./pred_data.txt", quote=F, row.names = F, col.names=T, append=F,sep = ",")
