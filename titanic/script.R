@@ -9,6 +9,7 @@ library(ROCR)
 # This's loading TRAIN and TEST data
 train  <- read.csv("./../../Kaggle_data/titanic/train.csv",stringsAsFactors = F,na.strings = "NULL")
 test   <- read.csv("./../../Kaggle_data/titanic/test.csv",stringsAsFactors = F,na.strings = "NULL")
+train_ <- train
 gender <- read.csv("./../../Kaggle_data/titanic/gender_submission.csv",stringsAsFactors = F,na.strings = "NULL")
 test <- merge(gender,test)
 
@@ -49,13 +50,18 @@ test$Title[test$Title %in% male_title] <- 'Mr'
 test$Title[test$Title %in% mis_title] <- 'Ms'
 print(table(test$Sex, test$Title))
 
+test[is.na(test[,"Fare"]),"Fare"] <- max(test[test$Pclass == 3, "Fare"], na.rm = T)
+
+train$mixPS <- train$Parch+train$SibSp
+test$mixPS <- test$Parch+test$SibSp
+
 # Delete Data (PassengerId,Name)
-train <- train[,c(2,3,7,8,13)]
-test  <- test[,c(2,3,7,8,13)]
+train <- train[,c(2,3,10,13,14)]
+test  <- test[,c(2,3,10,13,14)]
 train[,1] <- as.factor(train[,1])
 test[,1]  <- as.factor(test[,1])
-train[,5] <- as.factor(train[,5])
-test[,5]  <- as.factor(test[,5])
+train[,4] <- as.factor(train[,4])
+test[,4]  <- as.factor(test[,4])
 
 num <- sample(nrow(train), nrow(train)*0.7, replace = F)
 train1 <- train[num,]
@@ -63,6 +69,7 @@ train2 <- train[-num,]
 
 # randomforest tuneRF
 tune <- tuneRF(train1[,-1], train1[,1], doBest=T, ntreeTry = 500, stepFactor = T)
+varImpPlot(tune)
 print("[tune-train1] Confusion Matrix:")
 print(tune$confusion)
 
