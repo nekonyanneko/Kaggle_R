@@ -5,13 +5,43 @@ library(ggthemes)
 library(scales)
 library(dplyr)
 library(ROCR)
+library(e1071)
 
 # This's loading TRAIN and TEST data
-train  <- read.csv("./../../Kaggle_data/titanic/train.csv",stringsAsFactors = F,na.strings = "NULL")
-test   <- read.csv("./../../Kaggle_data/titanic/test.csv",stringsAsFactors = F,na.strings = "NULL")
+train  <- read.csv("./../../Kaggle_data/titanic/train.csv", stringsAsFactors = F, na.strings = "NULL")
+test   <- read.csv("./../../Kaggle_data/titanic/test.csv",  stringsAsFactors = F, na.strings = "NULL")
 train_ <- train
-gender <- read.csv("./../../Kaggle_data/titanic/gender_submission.csv",stringsAsFactors = F,na.strings = "NULL")
+gender <- read.csv("./../../Kaggle_data/titanic/gender_submission.csv", stringsAsFactors = F, na.strings = "NULL")
 test <- merge(gender,test)
+
+# Processing missing values
+train$Fare <- matrix(train$Fare) %>% impute(what = "median")
+test$Fare  <- matrix(test$Fare)  %>% impute(what = "median")
+train$Age  <- matrix(train$Age)  %>% impute(what = "mean")
+test$Age   <- matrix(test$Age)   %>% impute(what = "mean")
+
+# This temporary is used for conversion for Hist Gram
+hist_tmp <- train
+
+hist_tmp$Sex[hist_tmp$Sex == "male"]   <- 0
+hist_tmp$Sex[hist_tmp$Sex == "female"] <- 1
+hist(as.integer(hist_tmp$Sex[hist_tmp$Survived == 0]), breaks=2,
+     xlab ="Sex", ylab = "Survive", main = "Sex" , col = "#ff00ff50", labels = T)
+hist(as.integer(hist_tmp$Sex[hist_tmp$Survived == 1]), breaks=2,
+     xlab ="Sex", ylab = "Survive", main = "Sex" , col = "#00000050", labels = T, add = T)
+# ->>>>>> Attention male/female
+
+hist_tmp$Title <- gsub('(.*, )|(\\..*)', '', hist_tmp$Name)
+table(hist_tmp$Sex, hist_tmp$Title)
+# Capt Col Don  Dr Jonkheer Lady Major Master Miss Mlle Mme  Mr Mrs  Ms Rev Sir the Countess
+# 0    1   2   1   6        1    0     2     40    0    0   0 517   0   0   6   1            0
+# 1    0   0   0   1        0    1     0      0  182    2   1   0 125   1   0   0            1
+hist(as.integer(hist_tmp$Sex[hist_tmp$Survived == 0]), breaks=2,
+     xlab ="Sex", ylab = "Survive", main = "Sex" , col = "#ff00ff50", labels = T)
+hist(as.integer(hist_tmp$Sex[hist_tmp$Survived == 1]), breaks=2,
+     xlab ="Sex", ylab = "Survive", main = "Sex" , col = "#00000050", labels = T, add = T)
+
+
 
 # Data Processing (Add Title)
 train$Title <- gsub('(.*, )|(\\..*)', '', train$Name)
@@ -108,3 +138,4 @@ pred_data <- cbind(gender[,1],pred.tune)
 pred_data[,2] <- pred_data[,2]-1
 colnames(pred_data) <- c("PassengerId", "Survived")
 write.table(pred_data, "./pred_data.txt", quote=F, row.names = F, col.names=T, append=F,sep = ",")
+
