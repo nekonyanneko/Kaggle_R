@@ -247,9 +247,11 @@ test$Tiket2[is.na(test$Tiket2)] <- 0
 
 # Delete Data (PassengerId,Name)
 train <- train[,-which (colnames(train) %in% 
-                          c("Name","Title","Cabin","Ticket","Embarked","PassengerId","SibSp","Parch","Title"))]
+                          c("Name","Title","Cabin","Ticket","Embarked","PassengerId","SibSp","Parch","Title"
+                            ,"Mrs","Miss","Embarked_S","Cabin2","Pclass"))]
 test  <- test[,-which  (colnames(test)  %in% 
-                          c("Name","Title","Cabin","Ticket","Embarked","PassengerId","SibSp","Parch","Title"))]
+                          c("Name","Title","Cabin","Ticket","Embarked","PassengerId","SibSp","Parch","Title"
+                            ,"Mrs","Miss","Embarked_S","Cabin2","Pclass"))]
 train[,"Survived"] <- as.factor(train[,"Survived"])
 test[,"Survived"]  <- as.factor(test[,"Survived"])
 train[,"Sex"] <- as.factor(train[,"Sex"])
@@ -296,10 +298,26 @@ auc <- as.numeric(auc.tmp@y.values)
 print("[tune-train2]AUC")
 print(auc)
 
+# all train
+tune <- tuneRF(train[,-1], train[,1], doBest=T, ntreeTry = 1000, stepFactor = T)
+varImpPlot(tune)
+print("[tune-test] Confusion Matrix:")
+print(tune$confusion)
+# test predict
+pred.tune <- predict(tune, newdata=test, type='class')
+prob.tune <- predict(tune, newdata=test, type='prob')
+# ROC and AUC
+pred <- prediction(predictions = prob.tune[,2], labels = test[,1])  #確率値、正解ラベル
+perf <- performance(pred, "tpr", "fpr")
+plot(perf)
+auc.tmp <- performance(pred,"auc")
+auc <- as.numeric(auc.tmp@y.values)
+print("[tune-test]AUC")
+print(auc)
+
 # Kaggle Data create
 pred.tune <- predict(tune, newdata=test, type='class')
 pred_data <- cbind(gender[,1],pred.tune)
 pred_data[,2] <- pred_data[,2]-1
 colnames(pred_data) <- c("PassengerId", "Survived")
 write.table(pred_data, "./pred_data.txt", quote=F, row.names = F, col.names=T, append=F,sep = ",")
-
