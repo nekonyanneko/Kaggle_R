@@ -26,9 +26,9 @@ hist_tmp <- train
 # ->>>>>> Attention male/female
 hist_tmp$Sex[hist_tmp$Sex == "male"]   <- 0
 hist_tmp$Sex[hist_tmp$Sex == "female"] <- 1
-hist(as.integer(hist_tmp$Sex[hist_tmp$Survived == 0]), breaks=2,
+hist(as.integer(hist_tmp$Sex[hist_tmp$Survived == 0]), breaks=0:2,
      xlab ="Sex", ylab = "Survive", main = "Sex" , col = "#ff00ff50", labels = T, ylim = c(0,500))
-hist(as.integer(hist_tmp$Sex[hist_tmp$Survived == 1]), breaks=2,
+hist(as.integer(hist_tmp$Sex[hist_tmp$Survived == 1]), breaks=0:2,
      xlab ="Sex", ylab = "Survive", main = "Sex" , col = "#00000050", labels = T, add = T)
 # ->>>>>> Attention male/female
 # ->>>>>> Attention Master Miss Mr Mrs
@@ -134,36 +134,34 @@ hist(as.integer(hist_tmp$Pclass[hist_tmp$Survived == 1 & hist_tmp$Pclass == "3"]
 # ->>>>>> Attention Pclass
 # ->>>>>> Attention Pclass/Age
 hist_tmp$Age <- as.integer(hist_tmp$Age)
-hist_tmp$Age[0  <= hist_tmp$Age & hist_tmp$Age < 5] <- 0
-hist_tmp$Age[5  <= hist_tmp$Age & hist_tmp$Age < 10] <- 5
-hist_tmp$Age[10 <= hist_tmp$Age & hist_tmp$Age < 15] <- 10
-hist_tmp$Age[15 <= hist_tmp$Age & hist_tmp$Age < 20] <- 15
-hist_tmp$Age[20 <= hist_tmp$Age & hist_tmp$Age < 25] <- 20
-hist_tmp$Age[25 <= hist_tmp$Age & hist_tmp$Age < 30] <- 25
-hist_tmp$Age[30 <= hist_tmp$Age & hist_tmp$Age < 35] <- 30
-hist_tmp$Age[35 <= hist_tmp$Age & hist_tmp$Age < 40] <- 35
-hist_tmp$Age[40 <= hist_tmp$Age & hist_tmp$Age < 45] <- 40
-hist_tmp$Age[45 <= hist_tmp$Age & hist_tmp$Age < 50] <- 45
-hist_tmp$Age[50 <= hist_tmp$Age & hist_tmp$Age < 100] <- 50
+hist_tmp$Age[0  <= hist_tmp$Age & hist_tmp$Age <= 10] <- 10
+hist_tmp$Age[11 <= hist_tmp$Age & hist_tmp$Age <= 20] <- 20
+hist_tmp$Age[21 <= hist_tmp$Age & hist_tmp$Age <= 30] <- 30
+hist_tmp$Age[31 <= hist_tmp$Age & hist_tmp$Age <= 40] <- 40
+hist_tmp$Age[41 <= hist_tmp$Age] <- 50
 table(hist_tmp$Survived,hist_tmp$Age)
-hist(as.integer(hist_tmp$Age[hist_tmp$Survived == 0]), breaks=0:10*5,
-     xlab ="Age", ylab = "Survive", main = "Age" , col = "#ff00ff50", labels = T, ylim = c(0,200))
-hist(as.integer(hist_tmp$Age[hist_tmp$Survived == 1]), breaks=0:10*5,
+hist(as.integer(hist_tmp$Age[hist_tmp$Survived == 0]), breaks=0:5*10,
+     xlab ="Age", ylab = "Survive", main = "Age" , col = "#ff00ff50", labels = T, ylim = c(0,300))
+hist(as.integer(hist_tmp$Age[hist_tmp$Survived == 1]), breaks=0:5*10,
      xlab ="Age", ylab = "Survive", main = "Age" , col = "#00000050", labels = T, add = T)
 
-hist(as.integer(hist_tmp$Age[hist_tmp$Survived == 0 & hist_tmp$Pclass == 1]), breaks = 0:10*5,
+hist(as.integer(hist_tmp$Age[hist_tmp$Survived == 0 & hist_tmp$Pclass == 1]), breaks = 0:5*10,
      xlab ="Pclass1", ylab = "Survive", main = "Pclass1" , col = "#ff00ff50", labels = T, ylim = c(0,50))
-hist(as.integer(hist_tmp$Age[hist_tmp$Survived == 1 & hist_tmp$Pclass == 1]), breaks = 0:10*5,
+hist(as.integer(hist_tmp$Age[hist_tmp$Survived == 1 & hist_tmp$Pclass == 1]), breaks = 0:5*10,
      xlab ="Pclass1", ylab = "Survive", main = "Pclass1" , col = "#00000050", labels = T, add = T)
-hist(as.integer(hist_tmp$Age[hist_tmp$Survived == 0 & hist_tmp$Pclass == 2]), breaks = 0:10*5,
-     xlab ="Pclass2", ylab = "Survive", main = "Pclass2" , col = "#ff00ff50", labels = T, ylim = c(0,50))
-hist(as.integer(hist_tmp$Age[hist_tmp$Survived == 1 & hist_tmp$Pclass == 2]), breaks = 0:10*5,
+hist(as.integer(hist_tmp$Age[hist_tmp$Survived == 0 & hist_tmp$Pclass == 2]), breaks = 0:5*10,
+     xlab ="Pclass2", ylab = "Survive", main = "Pclass2" , col = "#ff00ff50", labels = T, ylim = c(0,300))
+hist(as.integer(hist_tmp$Age[hist_tmp$Survived == 1 & hist_tmp$Pclass == 2]), breaks = 0:5*10,
      xlab ="Pclass2", ylab = "Survive", main = "Pclass2" , col = "#00000050", labels = T, add = T)
-hist(as.integer(hist_tmp$Age[hist_tmp$Survived == 0 & hist_tmp$Pclass == 3]), breaks = 0:10*5,
+hist(as.integer(hist_tmp$Age[hist_tmp$Survived == 0 & hist_tmp$Pclass == 3]), breaks = 0:5*10,
      xlab ="Pclass3", ylab = "Survive", main = "Pclass3" , col = "#ff00ff50", labels = T, ylim = c(0,250))
-hist(as.integer(hist_tmp$Age[hist_tmp$Survived == 1 & hist_tmp$Pclass == 3]), breaks = 0:10*5,
+hist(as.integer(hist_tmp$Age[hist_tmp$Survived == 1 & hist_tmp$Pclass == 3]), breaks = 0:5*10,
      xlab ="Pclass3", ylab = "Survive", main = "Pclass3" , col = "#00000050", labels = T, add = T)
 # ->>>>>> Attention Pclass/Age
+hist(as.integer(hist_tmp$Age[hist_tmp$Survived == 0]), breaks=0:5*10,
+     xlab ="Age", ylab = "Survive", main = "Age" , col = "#ff00ff50", labels = T, ylim = c(0,300))
+hist(as.integer(hist_tmp$Age[hist_tmp$Survived == 1]), breaks=0:5*10,
+     xlab ="Age", ylab = "Survive", main = "Age" , col = "#00000050", labels = T, add = T)
 
 # Data Processing (Add Title)
 train$Title <- gsub('(.*, )|(\\..*)', '', train$Name)
@@ -178,52 +176,24 @@ train$Embarked_S[train$Embarked == "S"] <- 1; train$Embarked_S[is.na(train$Embar
 test$Embarked_S[test$Embarked == "S"] <- 1; test$Embarked_S[is.na(test$Embarked_S)] <- 0
 train$SibSpAndParch <- train$SibSp + train$Parch
 test$SibSpAndParch <- test$SibSp + test$Parch
-train$CabinA <- gsub('(A.*)', '0', train$Cabin)
-train$CabinB <- gsub('(B.*)', '1', train$CabinA)
-train$CabinC <- gsub('(C.*)', '2', train$CabinB)
-train$CabinD <- gsub('(D.*)', '3', train$CabinC)
-train$CabinE <- gsub('(E.*)', '4', train$CabinD)
-train$CabinF <- gsub('(F.*)', '5', train$CabinE)
-train$Cabin2 <- gsub('([G-Z].*)', '6', train$CabinF)
+train$Cabin2 <- gsub('([A-Z].*)', '1', train$Cabin)
 train$Cabin2[train$Cabin2 == ""] <- 0
-train <- train[,-which (colnames(train) %in% 
-                          c("CabinA","CabinB","CabinC","CabinD","CabinE","CabinF","CabinG"))]
-test$CabinA <- gsub('(A.*)', '0', test$Cabin)
-test$CabinB <- gsub('(B.*)', '1', test$CabinA)
-test$CabinC <- gsub('(C.*)', '2', test$CabinB)
-test$CabinD <- gsub('(D.*)', '3', test$CabinC)
-test$CabinE <- gsub('(E.*)', '4', test$CabinD)
-test$CabinF <- gsub('(F.*)', '5', test$CabinE)
-test$Cabin2 <- gsub('([G-Z].*)', '6', test$CabinF)
+test$Cabin2 <- gsub('([A-Z].*)', '1', test$Cabin)
 test$Cabin2[test$Cabin2 == ""] <- 0
-test <- test[,-which (colnames(test) %in% 
-                          c("CabinA","CabinB","CabinC","CabinD","CabinE","CabinF","CabinG"))]
 
 # Fare/Age log scale
 train$Age <- as.integer(train$Age)
 test$Age  <- as.integer(test$Age)
-train$Age[0  <= train$Age & train$Age < 5] <- 0
-train$Age[5  <= train$Age & train$Age < 10] <- 5
-train$Age[10 <= train$Age & train$Age < 15] <- 10
-train$Age[15 <= train$Age & train$Age < 20] <- 15
-train$Age[20 <= train$Age & train$Age < 25] <- 20
-train$Age[25 <= train$Age & train$Age < 30] <- 25
-train$Age[30 <= train$Age & train$Age < 35] <- 30
-train$Age[35 <= train$Age & train$Age < 40] <- 35
-train$Age[40 <= train$Age & train$Age < 45] <- 40
-train$Age[45 <= train$Age & train$Age < 50] <- 45
-train$Age[50 <= train$Age & train$Age < 100] <- 50
-test$Age[0  <= test$Age & test$Age < 5] <- 0
-test$Age[5  <= test$Age & test$Age < 10] <- 5
-test$Age[10 <= test$Age & test$Age < 15] <- 10
-test$Age[15 <= test$Age & test$Age < 20] <- 15
-test$Age[20 <= test$Age & test$Age < 25] <- 20
-test$Age[25 <= test$Age & test$Age < 30] <- 25
-test$Age[30 <= test$Age & test$Age < 35] <- 30
-test$Age[35 <= test$Age & test$Age < 40] <- 35
-test$Age[40 <= test$Age & test$Age < 45] <- 40
-test$Age[45 <= test$Age & test$Age < 50] <- 45
-test$Age[50 <= test$Age & test$Age < 100] <- 50
+train$Age[0  <= train$Age & train$Age < 10] <- 0
+train$Age[10 <= train$Age & train$Age < 20] <- 10
+train$Age[20 <= train$Age & train$Age < 30] <- 20
+train$Age[30 <= train$Age & train$Age < 40] <- 30
+train$Age[40 <= train$Age] <- 40
+test$Age[0  <= test$Age & test$Age < 10] <- 0
+test$Age[10 <= test$Age & test$Age < 20] <- 10
+test$Age[20 <= test$Age & test$Age < 30] <- 20
+test$Age[30 <= test$Age & test$Age < 40] <- 30
+test$Age[40 <= test$Age] <- 40
 train$Fare <- as.integer(train$Fare)
 test$Fare  <- as.integer(test$Fare)
 train$Fare <- log(train$Fare+1) # +1 is not -Inf
@@ -248,16 +218,14 @@ test$Tiket2[is.na(test$Tiket2)] <- 0
 # Delete Data (PassengerId,Name)
 train <- train[,-which (colnames(train) %in% 
                           c("Name","Title","Cabin","Ticket","Embarked","PassengerId","SibSp","Parch","Title"
-                            ,"Mrs","Miss","Embarked_S","Cabin2","Pclass"))]
+                            ,"Mr","Miss","Embarked_S"))]
 test  <- test[,-which  (colnames(test)  %in% 
                           c("Name","Title","Cabin","Ticket","Embarked","PassengerId","SibSp","Parch","Title"
-                            ,"Mrs","Miss","Embarked_S","Cabin2","Pclass"))]
+                            ,"Mr","Miss","Embarked_S"))]
 train[,"Survived"] <- as.factor(train[,"Survived"])
 test[,"Survived"]  <- as.factor(test[,"Survived"])
 train[,"Sex"] <- as.factor(train[,"Sex"])
 test[,"Sex"]  <- as.factor(test[,"Sex"])
-train$Age <- as.factor(train$Age)
-test$Age <- as.factor(test$Age)
 
 num <- sample(nrow(train), nrow(train)*0.7, replace = F)
 train1 <- train[num,]
@@ -299,7 +267,7 @@ print("[tune-train2]AUC")
 print(auc)
 
 # all train
-tune <- tuneRF(train[,-1], train[,1], doBest=T, ntreeTry = 1000, stepFactor = T)
+tune <- tuneRF(train[,-1], train[,1], doBest=T, ntreeTry = 500, stepFactor = T)
 varImpPlot(tune)
 print("[tune-test] Confusion Matrix:")
 print(tune$confusion)
